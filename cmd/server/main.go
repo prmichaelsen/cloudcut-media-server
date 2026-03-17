@@ -13,7 +13,9 @@ import (
 	"github.com/prmichaelsen/cloudcut-media-server/internal/api"
 	"github.com/prmichaelsen/cloudcut-media-server/internal/config"
 	"github.com/prmichaelsen/cloudcut-media-server/internal/edl"
+	"github.com/prmichaelsen/cloudcut-media-server/internal/logger"
 	"github.com/prmichaelsen/cloudcut-media-server/internal/media"
+	"github.com/prmichaelsen/cloudcut-media-server/internal/middleware"
 	"github.com/prmichaelsen/cloudcut-media-server/internal/render"
 	"github.com/prmichaelsen/cloudcut-media-server/internal/storage"
 	"github.com/prmichaelsen/cloudcut-media-server/internal/ws"
@@ -91,6 +93,7 @@ func handleEDLSubmit(session *ws.Session, msg *ws.Message, handlers *api.Handler
 
 func main() {
 	cfg := config.Load()
+	appLogger := logger.New(cfg.Env)
 
 	ctx := context.Background()
 
@@ -109,7 +112,10 @@ func main() {
 	renderer := render.NewRenderer(nil, ffmpegRenderer, jobStorage)
 
 	wsSrv := ws.NewServer(func(session *ws.Session, msg *ws.Message) {
-		log.Printf("ws message: session=%s type=%s", session.ID, msg.Type)
+		appLogger.Debug("ws_message", map[string]interface{}{
+			"session_id": session.ID,
+			"type":       msg.Type,
+		})
 
 		switch msg.Type {
 		case ws.TypeEDLSubmit:
@@ -117,22 +123,30 @@ func main() {
 		case ws.TypePing:
 			session.Send(&ws.Message{Type: ws.TypePong})
 		default:
-			log.Printf("unknown message type: %s", msg.Type)
+			appLogger.Warn("unknown_message_type", map[string]interface{}{
+				"type": msg.Type,
+			})
 		}
 	})
 
 	router := api.NewRouter(gcs, proxy, wsSrv, handlers)
 
+	// Wrap router with request logging middleware
+	handler := middleware.RequestLogging(appLogger)(router)
+
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%d", cfg.Port),
-		Handler:      router,
+		Handler:      handler,
 		ReadTimeout:  30 * time.Second,
 		WriteTimeout: 30 * time.Second,
 		IdleTimeout:  120 * time.Second,
 	}
 
 	go func() {
-		log.Printf("cloudcut-media-server starting on :%d (env=%s)", cfg.Port, cfg.Env)
+		appLogger.Info("server_starting", map[string]interface{}{
+			"port": cfg.Port,
+			"env":  cfg.Env,
+		})
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("server error: %v", err)
 		}
@@ -142,7 +156,7 @@ func main() {
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 
-	log.Println("shutting down server...")
+	appLogger.Info("server_shutting_down", nil)
 
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -151,5 +165,5 @@ func main() {
 		log.Fatalf("forced shutdown: %v", err)
 	}
 
-	log.Println("server stopped")
+	appLogger.Info("server_stopped", nil)
 }
