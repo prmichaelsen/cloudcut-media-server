@@ -16,10 +16,10 @@ milestones:
     estimated_weeks: 2
   - id: M2
     title: "Persistent Connection & EDL Processing"
-    status: in_progress
+    status: completed
     file: agent/milestones/milestone-2-persistent-connection.md
     tasks_total: 3
-    tasks_completed: 1
+    tasks_completed: 3
     estimated_weeks: 2
   - id: M3
     title: "Real-Time Progress & Integration"
@@ -28,6 +28,20 @@ milestones:
     tasks_total: 3
     tasks_completed: 0
     estimated_weeks: 1
+  - id: M4
+    title: "Stable API Contract"
+    status: not_started
+    file: agent/milestones/milestone-4-api-contract.md
+    tasks_total: 4
+    tasks_completed: 0
+    estimated_weeks: 2
+  - id: M5
+    title: "Plugin System Foundation"
+    status: not_started
+    file: agent/milestones/milestone-5-plugin-system.md
+    tasks_total: 6
+    tasks_completed: 0
+    estimated_weeks: 3
 
 tasks:
   milestone_1:
@@ -66,18 +80,20 @@ tasks:
       actual_hours: 0.1
     - id: 5
       title: "EDL Schema & Parsing"
-      status: not_started
+      status: completed
       file: agent/tasks/milestone-2-persistent-connection/task-5-edl-schema-parsing.md
       estimated_hours: 3
-      started: null
-      actual_hours: null
+      started: 2026-03-17T20:00:00Z
+      completed_date: 2026-03-17T20:15:00Z
+      actual_hours: 0.25
     - id: 6
       title: "Server-Side Rendering"
-      status: not_started
+      status: completed
       file: agent/tasks/milestone-2-persistent-connection/task-6-server-side-rendering.md
       estimated_hours: 6
-      started: null
-      actual_hours: null
+      started: 2026-03-17T20:15:00Z
+      completed_date: 2026-03-17T20:35:00Z
+      actual_hours: 0.33
   milestone_3:
     - id: 7
       title: "Progress Streaming"
@@ -100,27 +116,104 @@ tasks:
       estimated_hours: 3
       started: null
       actual_hours: null
+  milestone_4:
+    - id: 10
+      title: "Create OpenAPI Specification"
+      status: not_started
+      file: agent/tasks/milestone-4-api-contract/task-10-openapi-specification.md
+      estimated_hours: 5
+      started: null
+      actual_hours: null
+    - id: 11
+      title: "Document WebSocket Protocol"
+      status: not_started
+      file: agent/tasks/milestone-4-api-contract/task-11-websocket-protocol.md
+      estimated_hours: 3.5
+      started: null
+      actual_hours: null
+    - id: 12
+      title: "Generate API Reference Docs"
+      status: not_started
+      file: agent/tasks/milestone-4-api-contract/task-12-api-reference-docs.md
+      estimated_hours: 2.5
+      started: null
+      actual_hours: null
+    - id: 13
+      title: "Build TypeScript SDK"
+      status: not_started
+      file: agent/tasks/milestone-4-api-contract/task-13-typescript-sdk.md
+      estimated_hours: 7
+      started: null
+      actual_hours: null
+  milestone_5:
+    - id: 14
+      title: "Implement Plugin Registry"
+      status: not_started
+      file: agent/tasks/milestone-5-plugin-system/task-14-plugin-registry.md
+      estimated_hours: 5
+      started: null
+      actual_hours: null
+    - id: 15
+      title: "Create Plugin Manifest Parser"
+      status: not_started
+      file: agent/tasks/milestone-5-plugin-system/task-15-plugin-manifest-parser.md
+      estimated_hours: 3.5
+      started: null
+      actual_hours: null
+    - id: 16
+      title: "Build Go Plugin Loader"
+      status: not_started
+      file: agent/tasks/milestone-5-plugin-system/task-16-go-plugin-loader.md
+      estimated_hours: 4.5
+      started: null
+      actual_hours: null
+    - id: 17
+      title: "Integrate Plugins into EDL Validator"
+      status: not_started
+      file: agent/tasks/milestone-5-plugin-system/task-17-edl-validator-plugins.md
+      estimated_hours: 2.5
+      started: null
+      actual_hours: null
+    - id: 18
+      title: "Update FFmpeg Builder for Plugin Invocation"
+      status: not_started
+      file: agent/tasks/milestone-5-plugin-system/task-18-ffmpeg-builder-plugins.md
+      estimated_hours: 3.5
+      started: null
+      actual_hours: null
+    - id: 19
+      title: "Create Sample Film-Grain Plugin"
+      status: not_started
+      file: agent/tasks/milestone-5-plugin-system/task-19-sample-film-grain-plugin.md
+      estimated_hours: 4.5
+      started: null
+      actual_hours: null
 
 documentation:
-  design_documents: 1
-  milestone_documents: 3
+  design_documents: 2
+  milestone_documents: 5
   pattern_documents: 0
-  task_documents: 9
+  task_documents: 19
 
 progress:
   planning: 100
-  implementation: 44
-  overall: 50
+  implementation: 31
+  overall: 42
 
 recent_work:
   - date: 2026-03-17
     description: "Created requirements.md capturing architecture decisions: proxy editing model, chunk-based streaming, EDL state sync, GCP service mapping, client/server boundary"
   - date: 2026-03-17
     description: "Planned 3 milestones and 9 tasks for MVP: M1 (foundation/storage), M2 (WebSocket/EDL/rendering), M3 (progress/integration/resilience)"
+  - date: 2026-03-17
+    description: "Completed M1 and M2: Go server with GCS storage, FFmpeg proxy generation, WebSocket with session management, EDL parsing/validation, server-side rendering pipeline"
+  - date: 2026-03-17
+    description: "Planned M4 (API Contract) and M5 (Plugin System): 10 new tasks covering OpenAPI spec, WebSocket protocol docs, TypeScript SDK, plugin registry, Go plugin loader, manifest parser, and sample film-grain plugin"
 
 next_steps:
-  - "Start M1 Task 1: Go Project Setup"
-  - Run @acp.proceed to begin implementation
+  - "Update progress.yaml to mark M2 tasks complete"
+  - "Start M3 (Progress & Integration) or M4 (API Contract)"
+  - "Run @acp.proceed to begin next milestone"
 
 notes: []
 
