@@ -1,6 +1,6 @@
 project:
   name: cloudcut-media-server
-  version: 0.4.1
+  version: 0.5.0
   started: 2026-03-17
   status: in_progress
   description: |
@@ -16,10 +16,10 @@ milestones:
     estimated_weeks: 2
   - id: M2
     title: "Persistent Connection & EDL Processing"
-    status: not_started
+    status: in_progress
     file: agent/milestones/milestone-2-persistent-connection.md
     tasks_total: 3
-    tasks_completed: 0
+    tasks_completed: 1
     estimated_weeks: 2
   - id: M3
     title: "Real-Time Progress & Integration"
@@ -58,11 +58,12 @@ tasks:
   milestone_2:
     - id: 4
       title: "WebSocket Server"
-      status: not_started
+      status: completed
       file: agent/tasks/milestone-2-persistent-connection/task-4-websocket-server.md
       estimated_hours: 4
-      started: null
-      actual_hours: null
+      started: 2026-03-17T18:38:00Z
+      completed_date: 2026-03-17T18:45:00Z
+      actual_hours: 0.1
     - id: 5
       title: "EDL Schema & Parsing"
       status: not_started
@@ -108,8 +109,8 @@ documentation:
 
 progress:
   planning: 100
-  implementation: 33
-  overall: 40
+  implementation: 44
+  overall: 50
 
 recent_work:
   - date: 2026-03-17

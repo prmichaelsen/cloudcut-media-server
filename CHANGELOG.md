@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - 2026-03-17
+
+### Added
+- WebSocket server with persistent connections (nhooyr.io/websocket)
+- Session management with reconnection support and message buffering
+- Connection lifecycle: heartbeat ping/pong, read/write pumps, graceful close
+- JSON message protocol (ping, pong, edl.submit, job.progress, job.complete, job.error, media.status)
+- Session cleanup for expired disconnected sessions (5min grace period)
+- GET /ws endpoint for WebSocket upgrade with ?session_id= for reconnection
+
 ## [0.4.1] - 2026-03-17
 
 ### Added

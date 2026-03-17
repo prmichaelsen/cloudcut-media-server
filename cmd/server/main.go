@@ -14,6 +14,7 @@ import (
 	"github.com/prmichaelsen/cloudcut-media-server/internal/config"
 	"github.com/prmichaelsen/cloudcut-media-server/internal/media"
 	"github.com/prmichaelsen/cloudcut-media-server/internal/storage"
+	"github.com/prmichaelsen/cloudcut-media-server/internal/ws"
 )
 
 func main() {
@@ -29,7 +30,12 @@ func main() {
 
 	proxy := media.NewProxyGenerator(gcs, cfg)
 
-	router := api.NewRouter(gcs, proxy)
+	wsSrv := ws.NewServer(func(session *ws.Session, msg *ws.Message) {
+		log.Printf("ws message: session=%s type=%s", session.ID, msg.Type)
+		// Message routing will be wired in Task 5 (EDL) and Task 6 (Rendering)
+	})
+
+	router := api.NewRouter(gcs, proxy, wsSrv)
 
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%d", cfg.Port),
