@@ -6,7 +6,7 @@ packages:
     source: https://github.com/prmichaelsen/agent-context-protocol.git
     package_version: 5.22.0
     installed_at: 2026-03-17T17:20:38Z
-    updated_at: 2026-03-17T17:20:38Z
+    updated_at: 2026-03-17T17:32:08Z
     files:
       commands:
         - name: acp.audit.md
@@ -61,4 +61,4 @@ packages:
         - name: requirements.template.md
 
 manifest_version: 1.0.0
-last_updated: 2026-03-17T17:20:38Z
+last_updated: 2026-03-17T17:32:08Z
