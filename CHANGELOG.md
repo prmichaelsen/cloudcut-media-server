@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-03-17
+
+### Added
+- GCS client (upload, download, signed URL generation, delete)
+- Media upload endpoint (POST /api/v1/media/upload) with streaming to GCS
+- Media status endpoint (GET /api/v1/media/{id})
+- Signed URL endpoints for source and proxy media
+- Path conventions: sources/{id}/original.{ext}, proxies/{id}/proxy.mp4, exports/{session}/{ts}.mp4
+- Content-type validation (mp4, mov, webm, mkv, avi)
+- 5GB max upload size enforcement
+- Structured error response format
+
 ## [0.2.0] - 2026-03-17
 
 ### Added

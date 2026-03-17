@@ -12,12 +12,21 @@ import (
 
 	"github.com/prmichaelsen/cloudcut-media-server/internal/api"
 	"github.com/prmichaelsen/cloudcut-media-server/internal/config"
+	"github.com/prmichaelsen/cloudcut-media-server/internal/storage"
 )
 
 func main() {
 	cfg := config.Load()
 
-	router := api.NewRouter()
+	ctx := context.Background()
+
+	gcs, err := storage.NewGCSClient(ctx, cfg)
+	if err != nil {
+		log.Fatalf("failed to create GCS client: %v", err)
+	}
+	defer gcs.Close()
+
+	router := api.NewRouter(gcs)
 
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%d", cfg.Port),
@@ -40,10 +49,10 @@ func main() {
 
 	log.Println("shutting down server...")
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	if err := srv.Shutdown(ctx); err != nil {
+	if err := srv.Shutdown(shutdownCtx); err != nil {
 		log.Fatalf("forced shutdown: %v", err)
 	}
 

@@ -1,6 +1,6 @@
 project:
   name: cloudcut-media-server
-  version: 0.2.0
+  version: 0.3.0
   started: 2026-03-17
   status: in_progress
   description: |
@@ -12,7 +12,7 @@ milestones:
     status: in_progress
     file: agent/milestones/milestone-1-project-foundation.md
     tasks_total: 3
-    tasks_completed: 1
+    tasks_completed: 2
     estimated_weeks: 2
   - id: M2
     title: "Persistent Connection & EDL Processing"
@@ -41,11 +41,12 @@ tasks:
       actual_hours: 0.1
     - id: 2
       title: "GCS Integration"
-      status: not_started
+      status: completed
       file: agent/tasks/milestone-1-project-foundation/task-2-gcs-integration.md
       estimated_hours: 4
-      started: null
-      actual_hours: null
+      started: 2026-03-17T18:28:00Z
+      completed_date: 2026-03-17T18:35:00Z
+      actual_hours: 0.1
     - id: 3
       title: "FFmpeg Proxy Generation"
       status: not_started
@@ -106,8 +107,8 @@ documentation:
 
 progress:
   planning: 100
-  implementation: 11
-  overall: 20
+  implementation: 22
+  overall: 30
 
 recent_work:
   - date: 2026-03-17
