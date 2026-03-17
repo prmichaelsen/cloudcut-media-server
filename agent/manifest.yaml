@@ -1,7 +1,187 @@
-# ACP Package Manifest
-# Tracks installed packages and their versions
-
 packages:
+  core-sdk-go:
+    source: https://github.com/prmichaelsen/acp-core-sdk-go.git
+    package_version: 1.0.0
+    commit: b30437422773516778eecb9123ac7345fd0d035e
+    installed_at: 2026-03-17T19:47:34Z
+    updated_at: 2026-03-17T19:47:34Z
+    files:
+      patterns:
+        - name: core-sdk-go.types-shared.md
+          version: 0.0.0
+          installed_at: 2026-03-17T19:47:39Z
+          modified: false
+          checksum: sha256:9124e8b4a252e7936926dc41337795d0d7c299fa457c62b17aad87dda0795949
+        - name: core-sdk-go.types-error.md
+          version: 0.0.0
+          installed_at: 2026-03-17T19:47:39Z
+          modified: false
+          checksum: sha256:4dd709dbe12a641e9ba853c4c31e10ce9e0d74f4678d9d6c952ec15616ee5a99
+        - name: core-sdk-go.types-config.md
+          version: 0.0.0
+          installed_at: 2026-03-17T19:47:39Z
+          modified: false
+          checksum: sha256:c0a388dbfebb5503e33399123eb0c83ae8970a78a04e78694800e8196ad82905
+        - name: core-sdk-go.testing-unit.md
+          version: 0.0.0
+          installed_at: 2026-03-17T19:47:39Z
+          modified: false
+          checksum: sha256:ca18efceb418b06b5709931e75fe69bc5e43fd81308899a2d796451295fb5e2e
+        - name: core-sdk-go.testing-mocks.md
+          version: 0.0.0
+          installed_at: 2026-03-17T19:47:39Z
+          modified: false
+          checksum: sha256:50b05b7892a1c361e934529d53f280f3eb53b4dc0a50095f5505d59fd1f9e23e
+        - name: core-sdk-go.testing-integration.md
+          version: 0.0.0
+          installed_at: 2026-03-17T19:47:39Z
+          modified: false
+          checksum: sha256:104fb748715f028734608f6514c2b883cd8df61beeb525efa6b703837d72cec3
+        - name: core-sdk-go.testing-fixtures.md
+          version: 0.0.0
+          installed_at: 2026-03-17T19:47:39Z
+          modified: false
+          checksum: sha256:3fdd7c3773408042785643261307a7affc3289cd4d071f9d7e46f9f9ef63cefc
+        - name: core-sdk-go.testing-coverage.md
+          version: 0.0.0
+          installed_at: 2026-03-17T19:47:39Z
+          modified: false
+          checksum: sha256:32273a458f2770bb9136215b8279249187c31e5bf6aa3f69c2c83bc51bfc7bab
+        - name: core-sdk-go.service-logging.md
+          version: 0.0.0
+          installed_at: 2026-03-17T19:47:39Z
+          modified: false
+          checksum: sha256:2a895bfe957e764ee9e4d6dcc8b12ab15c99268ee45ba25309fec07ca871b07c
+        - name: core-sdk-go.service-interface.md
+          version: 0.0.0
+          installed_at: 2026-03-17T19:47:39Z
+          modified: false
+          checksum: sha256:ef5dbcf8037dfb88ab1852cf91d4f1b1a0969286811173bba59c447d7bc862ae
+        - name: core-sdk-go.service-error-handling.md
+          version: 0.0.0
+          installed_at: 2026-03-17T19:47:39Z
+          modified: false
+          checksum: sha256:e452a51214d4bb4a4e68d89cd8ad7d55537b9f3f5c64944ecac51dbc8f6a3a5b
+        - name: core-sdk-go.service-container.md
+          version: 0.0.0
+          installed_at: 2026-03-17T19:47:39Z
+          modified: false
+          checksum: sha256:76255f0a33236f3d043c3113ed476474844dd94a6e14afa1bd0393c86f0af3fa
+        - name: core-sdk-go.service-base.md
+          version: 0.0.0
+          installed_at: 2026-03-17T19:47:39Z
+          modified: false
+          checksum: sha256:5cd4d6d777b084cfe4562ecffb48d5b82d8736a8effa7cbd9300a3cfcf7cfa95
+        - name: core-sdk-go.goroutine-lifecycle.md
+          version: 0.0.0
+          installed_at: 2026-03-17T19:47:39Z
+          modified: false
+          checksum: sha256:c5e42447c097a6231246cb207dad85866e8658cff520c51b9b02f5df9b7f60a2
+        - name: core-sdk-go.context-propagation.md
+          version: 0.0.0
+          installed_at: 2026-03-17T19:47:39Z
+          modified: false
+          checksum: sha256:28a987fc93cc750c8805d5d376dc0f4cb4a5e703cff0ab12e2c45550a958f629
+        - name: core-sdk-go.config-struct.md
+          version: 0.0.0
+          installed_at: 2026-03-17T19:47:39Z
+          modified: false
+          checksum: sha256:025cb3189829511c3183526adf8283817ddcd8dbd0f9d9934ef293db0bd28830
+        - name: core-sdk-go.config-secrets.md
+          version: 0.0.0
+          installed_at: 2026-03-17T19:47:39Z
+          modified: false
+          checksum: sha256:5a5f2fd4a8e410f718d8466c1352b9372c30169159e38d62a7bec0f233671cf9
+        - name: core-sdk-go.config-loading.md
+          version: 0.0.0
+          installed_at: 2026-03-17T19:47:39Z
+          modified: false
+          checksum: sha256:b613936f048d4a3be8fc45d36c19c0a1c4e31d3f9f1589ffada790303688eb8f
+        - name: core-sdk-go.config-environment.md
+          version: 0.0.0
+          installed_at: 2026-03-17T19:47:39Z
+          modified: false
+          checksum: sha256:6c4050c6f0d9693c7a52c7c350afdcf95d9edbd0589fbe5a15e93df9dd875d03
+        - name: core-sdk-go.concurrent-services.md
+          version: 0.0.0
+          installed_at: 2026-03-17T19:47:39Z
+          modified: false
+          checksum: sha256:6b85c01e6c8c3dedddcb8739333128547f93c7649dc8cb02d47e3e5f446d673e
+        - name: core-sdk-go.client-type-generation.md
+          version: 0.0.0
+          installed_at: 2026-03-17T19:47:39Z
+          modified: false
+          checksum: sha256:8e1d4059d0b462fd01a78a6090b830cc7e91fa39e6ac7ef951ac6f2dfe82052c
+        - name: core-sdk-go.client-svc.md
+          version: 0.0.0
+          installed_at: 2026-03-17T19:47:39Z
+          modified: false
+          checksum: sha256:01cebf8d5e6623267ab52ab39334206e2c8744e6c2869994e4839aa1f18f0dfa
+        - name: core-sdk-go.client-overview.md
+          version: 0.0.0
+          installed_at: 2026-03-17T19:47:39Z
+          modified: false
+          checksum: sha256:4babdca9d0f022367613f439317489a3eb5a4fc9a51adcffe3ea606ded04dea4
+        - name: core-sdk-go.client-http-transport.md
+          version: 0.0.0
+          installed_at: 2026-03-17T19:47:39Z
+          modified: false
+          checksum: sha256:16614860199191a45e8373e3bfecf99e9d262c2b057a974112e5da90c3c7adb2
+        - name: core-sdk-go.client-app.md
+          version: 0.0.0
+          installed_at: 2026-03-17T19:47:39Z
+          modified: false
+          checksum: sha256:18bac43b5dbe6bddc3334353dbe94e7b4f33ffd5bd505b6691eea2b017abe16b
+        - name: core-sdk-go.adapter-rest.md
+          version: 0.0.0
+          installed_at: 2026-03-17T19:47:39Z
+          modified: false
+          checksum: sha256:9fa2a178f186e0e7093d082b5b65ba308f5b9142fdc1beaf7aae7b536573db06
+        - name: core-sdk-go.adapter-mcp.md
+          version: 0.0.0
+          installed_at: 2026-03-17T19:47:39Z
+          modified: false
+          checksum: sha256:b168050b5c6fdc5602abce88c00fbde9ee8d98f0aef34fd66039e509f2e80e64
+        - name: core-sdk-go.adapter-client.md
+          version: 0.0.0
+          installed_at: 2026-03-17T19:47:39Z
+          modified: false
+          checksum: sha256:a1e7ae97651a09e514aea874f24edf1874065d5dd9b1efdcc62140ed77827b8d
+        - name: core-sdk-go.adapter-cli.md
+          version: 0.0.0
+          installed_at: 2026-03-17T19:47:39Z
+          modified: false
+          checksum: sha256:f26e053753ef096793a4be35d336d31b794c6b62b8925b34f1ae00414ca6382d
+        - name: core-sdk-go.adapter-base.md
+          version: 0.0.0
+          installed_at: 2026-03-17T19:47:39Z
+          modified: false
+          checksum: sha256:6e80c9aad625727247f4c1f5caa7940cdb269a5fb102b92450336220a242e40c
+      commands:
+        - name: git.init.md
+          version: 0.0.0
+          installed_at: 2026-03-17T19:47:39Z
+          modified: false
+          checksum: sha256:2cd8bef13ba0278c3c3389631835aa4663a82c324bbb894aabd4299bb2370d53
+        - name: git.commit.md
+          version: 0.0.0
+          installed_at: 2026-03-17T19:47:39Z
+          modified: false
+          checksum: sha256:96249dee1a09f941f8ca2f072b53c90fa21fc34505fca4999d7c0c02982b3d02
+      designs:
+      scripts:
+        - name: bootstrap.sh
+          version: 0.0.0
+          installed_at: 2026-03-17T19:47:39Z
+          modified: false
+          checksum: sha256:unknown
+      files:
+      indices:
+        - name: acp.core.yaml
+          version: 0.0.0
+          installed_at: 2026-03-17T19:47:39Z
+          modified: false
+          checksum: sha256:12c91f3854e951ce24af17c5dc4870e962ca81f2a45bec9d9894b35af1e7727e
   acp-core:
     source: https://github.com/prmichaelsen/agent-context-protocol.git
     package_version: 5.22.0
@@ -59,6 +239,5 @@ packages:
       designs:
         - name: design.template.md
         - name: requirements.template.md
-
 manifest_version: 1.0.0
-last_updated: 2026-03-17T17:32:08Z
+last_updated: 2026-03-17T19:47:34Z
