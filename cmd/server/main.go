@@ -12,10 +12,36 @@ import (
 
 	"github.com/prmichaelsen/cloudcut-media-server/internal/api"
 	"github.com/prmichaelsen/cloudcut-media-server/internal/config"
+	"github.com/prmichaelsen/cloudcut-media-server/internal/edl"
 	"github.com/prmichaelsen/cloudcut-media-server/internal/media"
 	"github.com/prmichaelsen/cloudcut-media-server/internal/storage"
 	"github.com/prmichaelsen/cloudcut-media-server/internal/ws"
 )
+
+func handleEDLSubmit(session *ws.Session, msg *ws.Message, handlers *api.Handlers) {
+	mediaExists := func(mediaID string) bool {
+		_, ok := handlers.GetMedia(mediaID)
+		return ok
+	}
+
+	parsedEDL, errs := edl.Parse(msg.Payload, mediaExists)
+	if len(errs) > 0 {
+		log.Printf("EDL validation failed: %v", errs)
+		errMsg, _ := ws.NewMessage(ws.TypeJobError, "", ws.ErrorPayload{
+			Message: errs.Error(),
+		})
+		session.Send(errMsg)
+		return
+	}
+
+	log.Printf("EDL validated successfully: project=%s duration=%.2fs tracks=%d",
+		parsedEDL.ProjectID, parsedEDL.Timeline.Duration, len(parsedEDL.Timeline.Tracks))
+
+	ackMsg, _ := ws.NewMessage(ws.TypeEDLAck, "", map[string]string{"projectId": parsedEDL.ProjectID})
+	session.Send(ackMsg)
+
+	// TODO: Task 6 - trigger rendering job
+}
 
 func main() {
 	cfg := config.Load()
@@ -29,13 +55,22 @@ func main() {
 	defer gcs.Close()
 
 	proxy := media.NewProxyGenerator(gcs, cfg)
+	handlers := api.NewHandlers(gcs, proxy)
 
 	wsSrv := ws.NewServer(func(session *ws.Session, msg *ws.Message) {
 		log.Printf("ws message: session=%s type=%s", session.ID, msg.Type)
-		// Message routing will be wired in Task 5 (EDL) and Task 6 (Rendering)
+
+		switch msg.Type {
+		case ws.TypeEDLSubmit:
+			handleEDLSubmit(session, msg, handlers)
+		case ws.TypePing:
+			session.Send(&ws.Message{Type: ws.TypePong})
+		default:
+			log.Printf("unknown message type: %s", msg.Type)
+		}
 	})
 
-	router := api.NewRouter(gcs, proxy, wsSrv)
+	router := api.NewRouter(gcs, proxy, wsSrv, handlers)
 
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%d", cfg.Port),

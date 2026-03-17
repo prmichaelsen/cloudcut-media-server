@@ -9,16 +9,17 @@ import (
 	"github.com/prmichaelsen/cloudcut-media-server/internal/ws"
 )
 
-func NewRouter(gcs *storage.GCSClient, proxy *media.ProxyGenerator, wsSrv *ws.Server) http.Handler {
+func NewRouter(gcs *storage.GCSClient, proxy *media.ProxyGenerator, wsSrv *ws.Server, h *Handlers) http.Handler {
 	mux := http.NewServeMux()
-	h := NewHandlers(gcs, proxy)
 
 	mux.HandleFunc("GET /health", handleHealth)
 	mux.HandleFunc("POST /api/v1/media/upload", h.HandleUpload)
 	mux.HandleFunc("GET /api/v1/media/{id}", h.HandleGetMedia)
 	mux.HandleFunc("GET /api/v1/media/{id}/url", h.HandleGetSignedURL)
 	mux.HandleFunc("GET /api/v1/media/{id}/proxy/url", h.HandleGetProxyURL)
-	mux.HandleFunc("GET /ws", wsSrv.HandleWebSocket)
+	if wsSrv != nil {
+		mux.HandleFunc("GET /ws", wsSrv.HandleWebSocket)
+	}
 
 	var handler http.Handler = mux
 	handler = LoggingMiddleware(handler)
