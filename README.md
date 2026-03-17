@@ -6,7 +6,43 @@ Cloud-backed media processing server for video editing with GCP integration
 
 ## Quick Start
 
-[Add installation and usage instructions here]
+```bash
+# Clone the repository
+git clone https://github.com/prmichaelsen/cloudcut-media-server.git
+cd cloudcut-media-server
+
+# Install dependencies
+go mod download
+
+# Run locally
+go run ./cmd/server
+
+# Or with Docker
+docker-compose up
+```
+
+## Deployment
+
+### Production
+
+The server is deployed to Google Cloud Run:
+- **URL**: https://cloudcut-media-server-HASH-uc.a.run.app
+- **Health**: `curl https://cloudcut-media-server-HASH-uc.a.run.app/health`
+- **Region**: us-central1
+
+### Deploy Changes
+
+```bash
+./scripts/deploy.sh
+```
+
+### Environment Variables
+
+Configured in Cloud Run:
+- `ENV=production`
+- `GCP_PROJECT_ID=your-project-id`
+- `GCS_BUCKET_NAME=cloudcut-media-your-project-id`
+- `FFMPEG_PATH=/usr/bin/ffmpeg`
 
 ## Features
 
