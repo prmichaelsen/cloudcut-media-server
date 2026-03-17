@@ -42,6 +42,13 @@ milestones:
     tasks_total: 6
     tasks_completed: 0
     estimated_weeks: 3
+  - id: M6
+    title: "Production Deployment"
+    status: not_started
+    file: agent/milestones/milestone-6-production-deployment.md
+    tasks_total: 7
+    tasks_completed: 0
+    estimated_weeks: 2
 
 tasks:
   milestone_1:
@@ -188,12 +195,62 @@ tasks:
       estimated_hours: 4.5
       started: null
       actual_hours: null
+  milestone_6:
+    - id: 20
+      title: "Create Dockerfile and Docker Compose"
+      status: not_started
+      file: agent/tasks/milestone-6-production-deployment/task-20-dockerfile-docker-compose.md
+      estimated_hours: 3.5
+      started: null
+      actual_hours: null
+    - id: 21
+      title: "Set Up GCP Infrastructure"
+      status: not_started
+      file: agent/tasks/milestone-6-production-deployment/task-21-gcp-infrastructure.md
+      estimated_hours: 4.5
+      started: null
+      actual_hours: null
+    - id: 22
+      title: "Deploy to Cloud Run"
+      status: not_started
+      file: agent/tasks/milestone-6-production-deployment/task-22-deploy-cloud-run.md
+      estimated_hours: 3.5
+      started: null
+      actual_hours: null
+    - id: 23
+      title: "Configure Secrets Management"
+      status: not_started
+      file: agent/tasks/milestone-6-production-deployment/task-23-secrets-management.md
+      estimated_hours: 2.5
+      started: null
+      actual_hours: null
+    - id: 24
+      title: "Set Up CI/CD Pipeline"
+      status: not_started
+      file: agent/tasks/milestone-6-production-deployment/task-24-cicd-pipeline.md
+      estimated_hours: 4.5
+      started: null
+      actual_hours: null
+    - id: 25
+      title: "Add Monitoring and Logging"
+      status: not_started
+      file: agent/tasks/milestone-6-production-deployment/task-25-monitoring-logging.md
+      estimated_hours: 3.5
+      started: null
+      actual_hours: null
+    - id: 26
+      title: "Write Deployment Documentation"
+      status: not_started
+      file: agent/tasks/milestone-6-production-deployment/task-26-deployment-documentation.md
+      estimated_hours: 2.5
+      started: null
+      actual_hours: null
 
 documentation:
   design_documents: 2
-  milestone_documents: 5
+  milestone_documents: 6
   pattern_documents: 0
-  task_documents: 19
+  task_documents: 26
 
 progress:
   planning: 100
@@ -209,11 +266,13 @@ recent_work:
     description: "Completed M1 and M2: Go server with GCS storage, FFmpeg proxy generation, WebSocket with session management, EDL parsing/validation, server-side rendering pipeline"
   - date: 2026-03-17
     description: "Planned M4 (API Contract) and M5 (Plugin System): 10 new tasks covering OpenAPI spec, WebSocket protocol docs, TypeScript SDK, plugin registry, Go plugin loader, manifest parser, and sample film-grain plugin"
+  - date: 2026-03-17
+    description: "Planned M6 (Production Deployment): 7 tasks covering Docker containerization, GCP infrastructure setup, Cloud Run deployment, secrets management, CI/CD pipeline with GitHub Actions, monitoring/logging, and comprehensive deployment documentation"
 
 next_steps:
-  - "Update progress.yaml to mark M2 tasks complete"
-  - "Start M3 (Progress & Integration) or M4 (API Contract)"
-  - "Run @acp.proceed to begin next milestone"
+  - "Commit M6 planning artifacts"
+  - "Start M6 implementation: Create Dockerfile (Task 20)"
+  - "Or continue with M3/M4/M5 for additional features"
 
 notes: []
 
