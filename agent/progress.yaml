@@ -6,28 +6,117 @@ project:
   description: |
     Cloud-backed media processing server for video editing with GCP integration
 
-milestones: []
+milestones:
+  - id: M1
+    title: "Project Foundation & Media Storage"
+    status: not_started
+    file: agent/milestones/milestone-1-project-foundation.md
+    tasks_total: 3
+    tasks_completed: 0
+    estimated_weeks: 2
+  - id: M2
+    title: "Persistent Connection & EDL Processing"
+    status: not_started
+    file: agent/milestones/milestone-2-persistent-connection.md
+    tasks_total: 3
+    tasks_completed: 0
+    estimated_weeks: 2
+  - id: M3
+    title: "Real-Time Progress & Integration"
+    status: not_started
+    file: agent/milestones/milestone-3-progress-integration.md
+    tasks_total: 3
+    tasks_completed: 0
+    estimated_weeks: 1
 
-tasks: {}
+tasks:
+  milestone_1:
+    - id: 1
+      title: "Go Project Setup"
+      status: not_started
+      file: agent/tasks/milestone-1-project-foundation/task-1-go-project-setup.md
+      estimated_hours: 3
+      started: null
+      actual_hours: null
+    - id: 2
+      title: "GCS Integration"
+      status: not_started
+      file: agent/tasks/milestone-1-project-foundation/task-2-gcs-integration.md
+      estimated_hours: 4
+      started: null
+      actual_hours: null
+    - id: 3
+      title: "FFmpeg Proxy Generation"
+      status: not_started
+      file: agent/tasks/milestone-1-project-foundation/task-3-ffmpeg-proxy-generation.md
+      estimated_hours: 4
+      started: null
+      actual_hours: null
+  milestone_2:
+    - id: 4
+      title: "WebSocket Server"
+      status: not_started
+      file: agent/tasks/milestone-2-persistent-connection/task-4-websocket-server.md
+      estimated_hours: 4
+      started: null
+      actual_hours: null
+    - id: 5
+      title: "EDL Schema & Parsing"
+      status: not_started
+      file: agent/tasks/milestone-2-persistent-connection/task-5-edl-schema-parsing.md
+      estimated_hours: 3
+      started: null
+      actual_hours: null
+    - id: 6
+      title: "Server-Side Rendering"
+      status: not_started
+      file: agent/tasks/milestone-2-persistent-connection/task-6-server-side-rendering.md
+      estimated_hours: 6
+      started: null
+      actual_hours: null
+  milestone_3:
+    - id: 7
+      title: "Progress Streaming"
+      status: not_started
+      file: agent/tasks/milestone-3-progress-integration/task-7-progress-streaming.md
+      estimated_hours: 3
+      started: null
+      actual_hours: null
+    - id: 8
+      title: "End-to-End Workflow"
+      status: not_started
+      file: agent/tasks/milestone-3-progress-integration/task-8-end-to-end-workflow.md
+      estimated_hours: 4
+      started: null
+      actual_hours: null
+    - id: 9
+      title: "Error Handling & Resilience"
+      status: not_started
+      file: agent/tasks/milestone-3-progress-integration/task-9-error-handling-resilience.md
+      estimated_hours: 3
+      started: null
+      actual_hours: null
 
 documentation:
   design_documents: 1
-  milestone_documents: 0
+  milestone_documents: 3
   pattern_documents: 0
-  task_documents: 0
+  task_documents: 9
 
 progress:
-  planning: 10
+  planning: 100
   implementation: 0
-  overall: 5
+  overall: 10
 
 recent_work:
   - date: 2026-03-17
     description: "Created requirements.md capturing architecture decisions: proxy editing model, chunk-based streaming, EDL state sync, GCP service mapping, client/server boundary"
+  - date: 2026-03-17
+    description: "Planned 3 milestones and 9 tasks for MVP: M1 (foundation/storage), M2 (WebSocket/EDL/rendering), M3 (progress/integration/resilience)"
 
 next_steps:
-  - Plan milestones and tasks with @acp.plan
-  - Start development with @acp.proceed
+  - "Start M1 Task 1: Go Project Setup"
+  - Run @acp.proceed to begin implementation
 
 notes: []
 
