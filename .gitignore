@@ -1,7 +1,11 @@
-# Dependencies
-node_modules/
-.pnp
-.pnp.js
+# Go binaries
+bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+vendor/
 
 # Build output
 dist/
