@@ -12,7 +12,11 @@
       "Bash(./agent/scripts/acp.package-search.sh core:*)",
       "Bash(./agent/scripts/acp.package-install.sh --list --repo https://github.com/prmichaelsen/acp-core-sdk-go.git)",
       "Bash(./agent/scripts/acp.package-install.sh --repo https://github.com/prmichaelsen/acp-core-sdk-go.git -y)",
-      "Bash(export PATH=$PATH:/usr/local/go/bin)"
+      "Bash(export PATH=$PATH:/usr/local/go/bin)",
+      "Bash(chmod:*)",
+      "Bash(docker build:*)",
+      "Bash(docker images:*)",
+      "Bash(docker run:*)"
     ]
   }
 }

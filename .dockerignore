@@ -1,0 +1,11 @@
+.git
+.github
+.claude
+agent/
+*.md
+Dockerfile
+docker-compose.yml
+.gitignore
+.env
+*.test
+testdata/
