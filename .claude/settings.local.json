@@ -1,7 +1,14 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(snap list:*)",
+      "Bash(apt list:*)",
+      "Bash(curl -sL https://go.dev/dl/go1.24.1.linux-amd64.tar.gz -o /tmp/go.tar.gz)",
+      "Bash(sudo tar:*)",
+      "Bash(go *)",
+      "Bash(/usr/local/go/bin/go version:*)",
+      "Bash(export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin)"
     ]
   }
 }

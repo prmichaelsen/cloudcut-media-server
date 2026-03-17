@@ -1,5 +1,6 @@
 # Go binaries
 bin/
+server
 *.exe
 *.exe~
 *.dll
