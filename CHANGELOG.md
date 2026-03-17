@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2026-03-17
+
+### Added
+- FFmpeg command builder for proxy generation (libx264, configurable resolution/bitrate)
+- Proxy generation pipeline: download source → FFmpeg transcode → upload proxy to GCS
+- Automatic proxy trigger on upload (background goroutine)
+- Media status lifecycle: uploading → processing → ready (or error)
+- ffprobe integration for media duration detection
+- Temp file cleanup after proxy generation
+- FFmpeg timeout support (default 10 minutes)
+
+### Changed
+- Upload handler now triggers background proxy generation
+- Handlers accept ProxyGenerator dependency
+
 ## [0.3.0] - 2026-03-17
 
 ### Added

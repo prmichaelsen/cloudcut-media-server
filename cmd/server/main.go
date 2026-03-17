@@ -12,6 +12,7 @@ import (
 
 	"github.com/prmichaelsen/cloudcut-media-server/internal/api"
 	"github.com/prmichaelsen/cloudcut-media-server/internal/config"
+	"github.com/prmichaelsen/cloudcut-media-server/internal/media"
 	"github.com/prmichaelsen/cloudcut-media-server/internal/storage"
 )
 
@@ -26,7 +27,9 @@ func main() {
 	}
 	defer gcs.Close()
 
-	router := api.NewRouter(gcs)
+	proxy := media.NewProxyGenerator(gcs, cfg)
+
+	router := api.NewRouter(gcs, proxy)
 
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%d", cfg.Port),

@@ -4,12 +4,13 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/prmichaelsen/cloudcut-media-server/internal/media"
 	"github.com/prmichaelsen/cloudcut-media-server/internal/storage"
 )
 
-func NewRouter(gcs *storage.GCSClient) http.Handler {
+func NewRouter(gcs *storage.GCSClient, proxy *media.ProxyGenerator) http.Handler {
 	mux := http.NewServeMux()
-	h := NewHandlers(gcs)
+	h := NewHandlers(gcs, proxy)
 
 	mux.HandleFunc("GET /health", handleHealth)
 	mux.HandleFunc("POST /api/v1/media/upload", h.HandleUpload)
