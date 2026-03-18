@@ -1,0 +1,521 @@
+openapi: 3.0.3
+info:
+  title: CloudCut Media Server API
+  description: |
+    Cloud-backed media processing server for video editing workflows.
+    Provides media upload, proxy generation, EDL-based rendering, and job management.
+  version: 0.8.0
+  contact:
+    name: CloudCut
+  license:
+    name: MIT
+
+servers:
+  - url: https://cloudcut-media-server-868795766038.us-central1.run.app
+    description: Production (Cloud Run)
+  - url: http://localhost:8080
+    description: Local development
+
+tags:
+  - name: Health
+    description: Server health check
+  - name: Media
+    description: Media upload and retrieval
+  - name: Jobs
+    description: Job status and management
+  - name: Sessions
+    description: Session-scoped operations
+
+paths:
+  /health:
+    get:
+      tags: [Health]
+      summary: Health check
+      description: Returns server health status. Used by Cloud Run for liveness checks.
+      operationId: getHealth
+      responses:
+        "200":
+          description: Server is healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+
+  /api/v1/media/upload:
+    post:
+      tags: [Media]
+      summary: Upload media file
+      description: |
+        Upload a video file to the server. The file is stored in GCS and a proxy
+        generation job is automatically created. Supported formats: mp4, mov, webm, mkv, avi.
+        Maximum file size: 5GB.
+      operationId: uploadMedia
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Video file to upload
+      responses:
+        "201":
+          description: File uploaded successfully, proxy generation started
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UploadResponse"
+        "400":
+          description: Invalid file (missing, wrong format)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "413":
+          description: File exceeds maximum upload size (5GB)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Storage upload failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v1/media/{id}:
+    get:
+      tags: [Media]
+      summary: Get media details
+      description: Returns metadata and status for a specific media file.
+      operationId: getMedia
+      parameters:
+        - $ref: "#/components/parameters/MediaId"
+      responses:
+        "200":
+          description: Media details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Media"
+        "404":
+          description: Media not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v1/media/{id}/url:
+    get:
+      tags: [Media]
+      summary: Get signed URL for source media
+      description: Returns a time-limited signed URL to download the original source file from GCS.
+      operationId: getMediaSourceUrl
+      parameters:
+        - $ref: "#/components/parameters/MediaId"
+      responses:
+        "200":
+          description: Signed URL for source media
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SignedUrlResponse"
+        "404":
+          description: Media not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Failed to generate signed URL
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v1/media/{id}/proxy/url:
+    get:
+      tags: [Media]
+      summary: Get signed URL for proxy media
+      description: |
+        Returns a time-limited signed URL to download the proxy (lower-resolution) version.
+        Returns 404 if proxy has not been generated yet.
+      operationId: getMediaProxyUrl
+      parameters:
+        - $ref: "#/components/parameters/MediaId"
+      responses:
+        "200":
+          description: Signed URL for proxy media
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SignedUrlResponse"
+        "404":
+          description: Media or proxy not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Failed to generate signed URL
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v1/jobs/{id}:
+    get:
+      tags: [Jobs]
+      summary: Get job status
+      description: Returns the current status and progress of a processing job.
+      operationId: getJob
+      parameters:
+        - $ref: "#/components/parameters/JobId"
+      responses:
+        "200":
+          description: Job details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Job"
+        "404":
+          description: Job not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v1/sessions/{id}/jobs:
+    get:
+      tags: [Sessions]
+      summary: List jobs for session
+      description: Returns all jobs associated with a WebSocket session.
+      operationId: listSessionJobs
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: WebSocket session ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: List of jobs for the session
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SessionJobsResponse"
+
+  /ws:
+    get:
+      tags: [Sessions]
+      summary: WebSocket connection
+      description: |
+        Upgrade to WebSocket for real-time communication. Supports session reconnection
+        via the `session_id` query parameter. See WebSocket Protocol documentation for
+        message types and payload formats.
+      operationId: connectWebSocket
+      parameters:
+        - name: session_id
+          in: query
+          required: false
+          description: Previous session ID for reconnection
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "101":
+          description: WebSocket upgrade successful
+
+components:
+  parameters:
+    MediaId:
+      name: id
+      in: path
+      required: true
+      description: Media file ID
+      schema:
+        type: string
+        format: uuid
+
+    JobId:
+      name: id
+      in: path
+      required: true
+      description: Job ID
+      schema:
+        type: string
+        format: uuid
+
+  schemas:
+    HealthResponse:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [ok]
+          example: ok
+
+    UploadResponse:
+      type: object
+      required: [id, filename, size, status, gcsPath]
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique media ID
+        filename:
+          type: string
+          description: Original filename
+        size:
+          type: integer
+          format: int64
+          description: File size in bytes
+        status:
+          $ref: "#/components/schemas/MediaStatus"
+        gcsPath:
+          type: string
+          description: GCS storage path
+
+    Media:
+      type: object
+      required: [id, originalFilename, contentType, size, gcsSourcePath, status, createdAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        originalFilename:
+          type: string
+        contentType:
+          type: string
+          enum: [video/mp4, video/quicktime, video/webm, video/x-matroska, video/x-msvideo]
+        size:
+          type: integer
+          format: int64
+        gcsSourcePath:
+          type: string
+        gcsProxyPath:
+          type: string
+        status:
+          $ref: "#/components/schemas/MediaStatus"
+        error:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    MediaStatus:
+      type: string
+      enum: [uploading, processing, ready, error]
+      description: |
+        Media processing status:
+        - `uploading`: File is being uploaded to GCS
+        - `processing`: Proxy generation in progress
+        - `ready`: Proxy generated, media ready for editing
+        - `error`: Processing failed
+
+    Job:
+      type: object
+      required: [id, type, status, progress, createdAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          $ref: "#/components/schemas/JobType"
+        sessionId:
+          type: string
+          format: uuid
+        mediaId:
+          type: string
+          format: uuid
+        status:
+          $ref: "#/components/schemas/JobStatus"
+        progress:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 100
+          description: Completion percentage (0-100)
+        fps:
+          type: integer
+          description: Current encoding frames per second
+        speed:
+          type: string
+          description: Encoding speed multiplier (e.g., "2.1x")
+        eta:
+          type: integer
+          description: Estimated time remaining in seconds
+        stage:
+          type: string
+          enum: [downloading, rendering, uploading, complete, failed]
+        resultUrl:
+          type: string
+          description: Signed URL to download completed output
+        error:
+          type: string
+          description: Error message if job failed
+        createdAt:
+          type: string
+          format: date-time
+        startedAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+
+    JobType:
+      type: string
+      enum: [proxy_generation, export_render]
+      description: |
+        - `proxy_generation`: Generate low-resolution proxy from uploaded media
+        - `export_render`: Render final output from EDL
+
+    JobStatus:
+      type: string
+      enum: [queued, downloading, rendering, uploading, complete, failed]
+      description: |
+        Job processing status:
+        - `queued`: Waiting in job queue
+        - `downloading`: Downloading source from GCS
+        - `rendering`: FFmpeg encoding in progress
+        - `uploading`: Uploading output to GCS
+        - `complete`: Job finished successfully
+        - `failed`: Job failed (see error field)
+
+    SessionJobsResponse:
+      type: object
+      required: [jobs]
+      properties:
+        jobs:
+          type: array
+          items:
+            $ref: "#/components/schemas/Job"
+
+    SignedUrlResponse:
+      type: object
+      required: [url]
+      properties:
+        url:
+          type: string
+          format: uri
+          description: Time-limited signed URL for downloading the file
+
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+            message:
+              type: string
+              description: Human-readable error description
+            retryable:
+              type: boolean
+              description: Whether the client should retry the request
+            details:
+              type: object
+              additionalProperties: true
+              description: Additional error context
+
+    EDL:
+      type: object
+      description: Edit Decision List for server-side rendering
+      required: [version, projectId, timeline, output]
+      properties:
+        version:
+          type: string
+          enum: ["1.0"]
+        projectId:
+          type: string
+        timeline:
+          type: object
+          required: [duration, tracks]
+          properties:
+            duration:
+              type: number
+              description: Total timeline duration in seconds
+            tracks:
+              type: array
+              items:
+                $ref: "#/components/schemas/Track"
+        output:
+          type: object
+          required: [format, quality]
+          properties:
+            format:
+              type: string
+              enum: [mp4, webm]
+            quality:
+              type: string
+              enum: [draft, preview, final]
+            resolution:
+              type: object
+              properties:
+                width:
+                  type: integer
+                height:
+                  type: integer
+
+    Track:
+      type: object
+      required: [id, type, clips]
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum: [video, audio]
+        clips:
+          type: array
+          items:
+            $ref: "#/components/schemas/Clip"
+
+    Clip:
+      type: object
+      required: [mediaId, startTime, duration, inPoint, outPoint]
+      properties:
+        mediaId:
+          type: string
+          format: uuid
+        startTime:
+          type: number
+          description: Position on timeline in seconds
+        duration:
+          type: number
+          description: Clip duration on timeline in seconds
+        inPoint:
+          type: number
+          description: Source media start point in seconds
+        outPoint:
+          type: number
+          description: Source media end point in seconds
+        filters:
+          type: array
+          items:
+            $ref: "#/components/schemas/Filter"
+
+    Filter:
+      type: object
+      required: [type]
+      properties:
+        type:
+          type: string
+          description: Filter type identifier
+        params:
+          type: object
+          additionalProperties: true
+          description: Filter-specific parameters
