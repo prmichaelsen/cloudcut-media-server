@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0] - 2026-03-18
+
+### Added
+- FFmpeg progress parser (`internal/progress/parser.go`) with stderr parsing
+- Progress reporter with throttling to 2 updates/second (`internal/progress/reporter.go`)
+- Progress callback support in `RunFFmpegWithProgress()` for proxy generation
+- Progress tracking in render pipeline via `FFmpegRenderer.Run()`
+- Stage transitions: downloading, rendering, uploading, complete
+- Real-time progress streaming over WebSocket with percent, fps, speed, eta fields
+- Unit tests for progress parser covering valid/invalid FFmpeg output lines
+
 ## [0.5.0] - 2026-03-17
 
 ### Added

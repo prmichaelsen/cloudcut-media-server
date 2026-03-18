@@ -3,9 +3,11 @@ package render
 import (
 	"context"
 	"fmt"
+	"os/exec"
 	"strings"
 
 	"github.com/prmichaelsen/cloudcut-media-server/internal/edl"
+	"github.com/prmichaelsen/cloudcut-media-server/internal/progress"
 )
 
 // FFmpegRenderer implements FFmpegClient for building and executing FFmpeg commands.
@@ -51,9 +53,56 @@ func (f *FFmpegRenderer) BuildRenderCommand(edl *edl.EDL, inputPaths []string, o
 
 // Run executes FFmpeg with progress tracking.
 func (f *FFmpegRenderer) Run(ctx context.Context, args []string, progressCb ProgressCallback) error {
-	// TODO: Implement actual FFmpeg execution with progress parsing
-	// This will use os/exec.CommandContext and parse stderr for progress
-	// For now, return success to allow testing
+	// Estimate total duration from input files if possible
+	// For now, we'll parse progress without percentage (percentages calculated by parser)
+	// In a full implementation, we'd probe input files to get total duration
+
+	cmd := exec.CommandContext(ctx, f.ffmpegPath, args...)
+
+	// Capture stderr for progress parsing
+	stderrPipe, err := cmd.StderrPipe()
+	if err != nil {
+		return fmt.Errorf("create stderr pipe: %w", err)
+	}
+
+	// Start FFmpeg
+	if err := cmd.Start(); err != nil {
+		return fmt.Errorf("start ffmpeg: %w", err)
+	}
+
+	// Parse progress in a goroutine
+	done := make(chan error, 1)
+	go func() {
+		parser := progress.NewParser(0) // We don't know total duration yet
+		err := parser.Parse(stderrPipe, func(prog progress.Progress) {
+			if progressCb != nil {
+				// Convert speed to string format
+				speedStr := ""
+				if prog.Speed > 0 {
+					speedStr = fmt.Sprintf("%.1fx", prog.Speed)
+				}
+
+				// Calculate rough ETA (in seconds)
+				// Without knowing total duration, we can't calculate accurate ETA
+				// This would be improved with ffprobe duration lookup
+				eta := 0
+
+				progressCb(prog.Progress, int(prog.FPS), speedStr, eta, "rendering")
+			}
+		})
+		done <- err
+	}()
+
+	// Wait for FFmpeg to complete
+	cmdErr := cmd.Wait()
+
+	// Wait for progress parser to finish
+	<-done
+
+	if cmdErr != nil {
+		return fmt.Errorf("ffmpeg failed: %w", cmdErr)
+	}
+
 	return nil
 }
 

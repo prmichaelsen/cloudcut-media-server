@@ -4,9 +4,12 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"os/exec"
 	"strconv"
 	"time"
+
+	"github.com/prmichaelsen/cloudcut-media-server/internal/progress"
 )
 
 type FFmpegConfig struct {
@@ -38,9 +41,18 @@ func BuildProxyArgs(input, output string, cfg FFmpegConfig) []string {
 	}
 }
 
+// ProgressCallback is called periodically during FFmpeg execution with progress updates.
+type ProgressCallback func(percent float64, fps int, speed string, eta int, stage string)
+
 // RunFFmpeg executes an FFmpeg command with the given arguments.
 // It returns the result or an error if FFmpeg fails or times out.
 func RunFFmpeg(ctx context.Context, ffmpegPath string, args []string, timeout time.Duration) (*FFmpegResult, error) {
+	return RunFFmpegWithProgress(ctx, ffmpegPath, args, timeout, nil)
+}
+
+// RunFFmpegWithProgress executes FFmpeg with progress tracking.
+// progressCb is called periodically with progress updates (can be nil).
+func RunFFmpegWithProgress(ctx context.Context, ffmpegPath string, args []string, timeout time.Duration, progressCb ProgressCallback) (*FFmpegResult, error) {
 	if timeout == 0 {
 		timeout = 10 * time.Minute
 	}
@@ -50,24 +62,65 @@ func RunFFmpeg(ctx context.Context, ffmpegPath string, args []string, timeout ti
 
 	cmd := exec.CommandContext(ctx, ffmpegPath, args...)
 
-	var stderr bytes.Buffer
-	cmd.Stderr = &stderr
+	// Capture stderr for both progress parsing and error reporting
+	stderrPipe, err := cmd.StderrPipe()
+	if err != nil {
+		return nil, fmt.Errorf("create stderr pipe: %w", err)
+	}
 
 	start := time.Now()
-	err := cmd.Run()
+
+	// Start FFmpeg
+	if err := cmd.Start(); err != nil {
+		return nil, fmt.Errorf("start ffmpeg: %w", err)
+	}
+
+	// Collect stderr and parse progress
+	var stderrBuf bytes.Buffer
+	done := make(chan error, 1)
+
+	go func() {
+		if progressCb != nil {
+			// Parse progress and collect stderr
+			parser := progress.NewParser(0) // Duration unknown for proxy generation
+			buf := bytes.NewBuffer(nil)
+			teeReader := io.TeeReader(stderrPipe, buf)
+
+			parser.Parse(teeReader, func(prog progress.Progress) {
+				speedStr := ""
+				if prog.Speed > 0 {
+					speedStr = fmt.Sprintf("%.1fx", prog.Speed)
+				}
+				progressCb(prog.Progress, int(prog.FPS), speedStr, 0, "rendering")
+			})
+
+			stderrBuf.Write(buf.Bytes())
+			done <- nil
+		} else {
+			// Just collect stderr
+			io.Copy(&stderrBuf, stderrPipe)
+			done <- nil
+		}
+	}()
+
+	// Wait for FFmpeg to complete
+	cmdErr := cmd.Wait()
 	duration := time.Since(start)
+
+	// Wait for stderr collection to finish
+	<-done
 
 	result := &FFmpegResult{
 		Duration: duration,
-		Stderr:   stderr.String(),
+		Stderr:   stderrBuf.String(),
 	}
 
 	if ctx.Err() == context.DeadlineExceeded {
 		return result, fmt.Errorf("ffmpeg timed out after %v", timeout)
 	}
 
-	if err != nil {
-		return result, fmt.Errorf("ffmpeg failed (exit %v): %s", err, stderr.String())
+	if cmdErr != nil {
+		return result, fmt.Errorf("ffmpeg failed (exit %v): %s", cmdErr, stderrBuf.String())
 	}
 
 	return result, nil

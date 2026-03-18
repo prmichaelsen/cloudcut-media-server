@@ -32,11 +32,22 @@ func NewProxyGenerator(gcs *storage.GCSClient, cfg *config.Config) *ProxyGenerat
 // GenerateProxy downloads the source from GCS, runs FFmpeg to create a proxy,
 // uploads the proxy back to GCS, and updates the media record.
 func (p *ProxyGenerator) GenerateProxy(ctx context.Context, media *models.Media) error {
+	return p.GenerateProxyWithProgress(ctx, media, nil)
+}
+
+// GenerateProxyWithProgress generates a proxy with optional progress callback.
+// progressCb is called with progress updates during rendering (can be nil).
+func (p *ProxyGenerator) GenerateProxyWithProgress(ctx context.Context, media *models.Media, progressCb ProgressCallback) error {
 	tmpDir, err := os.MkdirTemp("", "cloudcut-proxy-*")
 	if err != nil {
 		return fmt.Errorf("create temp dir: %w", err)
 	}
 	defer os.RemoveAll(tmpDir)
+
+	// Report downloading stage
+	if progressCb != nil {
+		progressCb(0, 0, "", 0, "downloading")
+	}
 
 	// Download source from GCS
 	inputPath := filepath.Join(tmpDir, "source"+filepath.Ext(media.OriginalFilename))
@@ -44,16 +55,26 @@ func (p *ProxyGenerator) GenerateProxy(ctx context.Context, media *models.Media)
 		return fmt.Errorf("download source: %w", err)
 	}
 
-	// Generate proxy via FFmpeg
+	// Report rendering stage
+	if progressCb != nil {
+		progressCb(0, 0, "", 0, "rendering")
+	}
+
+	// Generate proxy via FFmpeg with progress
 	outputPath := filepath.Join(tmpDir, "proxy.mp4")
 	args := BuildProxyArgs(inputPath, outputPath, p.ffmpeg)
 
-	result, err := RunFFmpeg(ctx, p.ffmpeg.Path, args, 0)
+	result, err := RunFFmpegWithProgress(ctx, p.ffmpeg.Path, args, 0, progressCb)
 	if err != nil {
 		return fmt.Errorf("ffmpeg proxy generation: %w", err)
 	}
 
 	log.Printf("proxy generated for %s in %v", media.ID, result.Duration)
+
+	// Report uploading stage
+	if progressCb != nil {
+		progressCb(100, 0, "", 0, "uploading")
+	}
 
 	// Upload proxy to GCS
 	proxyPath := storage.ProxyPath(media.ID)
@@ -70,6 +91,11 @@ func (p *ProxyGenerator) GenerateProxy(ctx context.Context, media *models.Media)
 	// Update media record
 	media.GCSProxyPath = proxyPath
 	media.Status = models.MediaStatusReady
+
+	// Report complete
+	if progressCb != nil {
+		progressCb(100, 0, "", 0, "complete")
+	}
 
 	log.Printf("proxy uploaded for %s at %s", media.ID, proxyPath)
 
