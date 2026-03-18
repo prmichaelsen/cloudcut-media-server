@@ -30,10 +30,10 @@ milestones:
     estimated_weeks: 1
   - id: M4
     title: "Stable API Contract"
-    status: not_started
+    status: completed
     file: agent/milestones/milestone-4-api-contract.md
     tasks_total: 4
-    tasks_completed: 3
+    tasks_completed: 4
     estimated_weeks: 2
   - id: M5
     title: "Plugin System Foundation"
@@ -153,11 +153,12 @@ tasks:
       actual_hours: 0.1
     - id: 13
       title: "Build TypeScript SDK"
-      status: not_started
+      status: completed
       file: agent/tasks/milestone-4-api-contract/task-13-typescript-sdk.md
       estimated_hours: 7
-      started: null
-      actual_hours: null
+      started: 2026-03-18T01:26:00Z
+      completed_date: 2026-03-18T01:35:00Z
+      actual_hours: 0.15
   milestone_5:
     - id: 14
       title: "Implement Plugin Registry"
@@ -289,9 +290,9 @@ recent_work:
     description: "Completed Task 9 (Error Handling & Resilience): Implemented structured error types, exponential backoff retry for GCS operations, input validation hardening, consistent error responses across REST/WebSocket, GCS transient error detection"
 
 next_steps:
-  - "M3 complete! Next: M4 (API Contract) or M5 (Plugin System)"
-  - "Consider M4 for client SDK and OpenAPI spec"
-  - "Consider M5 for extensibility with custom effects"
+  - "M4 complete! Only M5 (Plugin System) remaining"
+  - "Consider M5 for extensibility with custom effects/filters"
+  - "Deploy latest changes to production"
 
 notes: []
 

@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0] - 2026-03-18
+
+### Added
+- TypeScript SDK (`sdk/typescript/`) with REST client and WebSocket client
+- `CloudCutClient` class for REST API operations (upload, media status, job polling)
+- `CloudCutWS` class for WebSocket communication with auto-reconnect
+- Full type definitions for all API types (Media, Job, EDL, etc.)
+- `waitForJob()` and `waitForMedia()` polling helpers
+- Event-driven WebSocket with typed listeners (progress, complete, error)
+- OpenAPI 3.0 specification (`api/openapi.yaml`)
+- WebSocket protocol specification (`api/websocket-protocol.md`)
+- Updated API reference docs with cross-links and quick reference table
+
 ## [0.8.0] - 2026-03-18
 
 ### Added
