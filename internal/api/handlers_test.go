@@ -2,6 +2,8 @@ package api
 
 import (
 	"testing"
+
+	"github.com/prmichaelsen/cloudcut-media-server/internal/validation"
 )
 
 func TestInferContentType(t *testing.T) {
@@ -21,7 +23,7 @@ func TestInferContentType(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		got := inferContentType(tt.filename)
+		got := validation.InferContentType(tt.filename)
 		if got != tt.want {
 			t.Errorf("inferContentType(%q) = %q, want %q", tt.filename, got, tt.want)
 		}

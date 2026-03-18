@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.0] - 2026-03-18
+
+### Added
+- Structured error types (`internal/errors/errors.go`) with code, message, details, retryable fields
+- Exponential backoff retry logic (`internal/retry/retry.go`) with configurable attempts and wait times
+- Input validation package (`internal/validation/validation.go`) for upload size/type checks
+- Retry on transient GCS errors (5xx, timeout, connection reset) in upload/download
+- Structured error responses across all REST endpoints
+- GCS transient error detection (500, 502, 503, 504, timeout)
+- FFmpeg transient error detection (disk full, temporary failures)
+- Validation for upload size (max 5GB) and content type (mp4, mov, webm, mkv, avi)
+- Consistent error format: `{"error": {"code": "...", "message": "...", "retryable": bool}}`
+
+### Changed
+- GCS upload now retries up to 3 times on transient errors with exponential backoff
+- GCS download now retries up to 3 times on transient errors
+- Upload handler uses structured validation and error responses
+- Moved content type inference to validation package
+
 ## [0.7.0] - 2026-03-18
 
 ### Added

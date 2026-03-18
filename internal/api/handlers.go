@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"path/filepath"
@@ -10,21 +9,14 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/prmichaelsen/cloudcut-media-server/internal/errors"
 	"github.com/prmichaelsen/cloudcut-media-server/internal/jobs"
 	"github.com/prmichaelsen/cloudcut-media-server/internal/media"
 	"github.com/prmichaelsen/cloudcut-media-server/internal/storage"
+	"github.com/prmichaelsen/cloudcut-media-server/internal/validation"
 	"github.com/prmichaelsen/cloudcut-media-server/pkg/models"
 )
 
-const maxUploadSize = 5 << 30 // 5GB
-
-var allowedContentTypes = map[string]bool{
-	"video/mp4":       true,
-	"video/quicktime": true,
-	"video/webm":      true,
-	"video/x-matroska": true,
-	"video/x-msvideo": true,
-}
 
 type Handlers struct {
 	gcs        *storage.GCSClient
@@ -45,28 +37,29 @@ func NewHandlers(gcs *storage.GCSClient, proxy *media.ProxyGenerator, jobManager
 }
 
 func (h *Handlers) HandleUpload(w http.ResponseWriter, r *http.Request) {
-	r.Body = http.MaxBytesReader(w, r.Body, maxUploadSize)
+	r.Body = http.MaxBytesReader(w, r.Body, validation.MaxUploadSize)
 
 	if err := r.ParseMultipartForm(32 << 20); err != nil {
-		writeError(w, http.StatusRequestEntityTooLarge, "UPLOAD_TOO_LARGE", "file exceeds maximum upload size")
+		writeError(w, http.StatusRequestEntityTooLarge, errors.ErrUploadTooLarge, "file exceeds maximum upload size")
 		return
 	}
 
 	file, header, err := r.FormFile("file")
 	if err != nil {
-		writeError(w, http.StatusBadRequest, "INVALID_UPLOAD", "missing or invalid file field")
+		writeError(w, http.StatusBadRequest, errors.ErrInvalidUpload, "missing or invalid file field")
 		return
 	}
 	defer file.Close()
 
+	// Validate upload
+	if valErr := validation.ValidateUpload(header); valErr != nil {
+		writeAppError(w, http.StatusBadRequest, valErr)
+		return
+	}
+
 	contentType := header.Header.Get("Content-Type")
 	if contentType == "" {
-		contentType = inferContentType(header.Filename)
-	}
-	if !allowedContentTypes[contentType] {
-		writeError(w, http.StatusBadRequest, "INVALID_CONTENT_TYPE",
-			fmt.Sprintf("unsupported content type: %s", contentType))
-		return
+		contentType = validation.InferContentType(header.Filename)
 	}
 
 	mediaID := uuid.New().String()
@@ -182,29 +175,14 @@ func (h *Handlers) SetWorker(worker *jobs.Worker) {
 }
 
 func writeError(w http.ResponseWriter, status int, code, message string) {
+	writeAppError(w, status, errors.New(code, message, false))
+}
+
+func writeAppError(w http.ResponseWriter, status int, err *errors.AppError) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"error": map[string]interface{}{
-			"code":    code,
-			"message": message,
-		},
+		"error": err,
 	})
 }
 
-func inferContentType(filename string) string {
-	switch strings.ToLower(filepath.Ext(filename)) {
-	case ".mp4":
-		return "video/mp4"
-	case ".mov":
-		return "video/quicktime"
-	case ".webm":
-		return "video/webm"
-	case ".mkv":
-		return "video/x-matroska"
-	case ".avi":
-		return "video/x-msvideo"
-	default:
-		return "application/octet-stream"
-	}
-}

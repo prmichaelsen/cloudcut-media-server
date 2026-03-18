@@ -8,6 +8,7 @@ import (
 
 	"cloud.google.com/go/storage"
 	"github.com/prmichaelsen/cloudcut-media-server/internal/config"
+	"github.com/prmichaelsen/cloudcut-media-server/internal/retry"
 )
 
 type GCSClient struct {
@@ -30,23 +31,31 @@ func NewGCSClient(ctx context.Context, cfg *config.Config) (*GCSClient, error) {
 }
 
 func (g *GCSClient) Upload(ctx context.Context, objectPath string, reader io.Reader) error {
-	wc := g.client.Bucket(g.bucket).Object(objectPath).NewWriter(ctx)
-	if _, err := io.Copy(wc, reader); err != nil {
-		wc.Close()
-		return fmt.Errorf("upload to %s: %w", objectPath, err)
-	}
-	if err := wc.Close(); err != nil {
-		return fmt.Errorf("close writer for %s: %w", objectPath, err)
-	}
-	return nil
+	return retry.Do(ctx, retry.DefaultConfig(), func() error {
+		wc := g.client.Bucket(g.bucket).Object(objectPath).NewWriter(ctx)
+		if _, err := io.Copy(wc, reader); err != nil {
+			wc.Close()
+			return fmt.Errorf("upload to %s: %w", objectPath, err)
+		}
+		if err := wc.Close(); err != nil {
+			return fmt.Errorf("close writer for %s: %w", objectPath, err)
+		}
+		return nil
+	}, retry.IsGCSTransient)
 }
 
 func (g *GCSClient) Download(ctx context.Context, objectPath string) (io.ReadCloser, error) {
-	rc, err := g.client.Bucket(g.bucket).Object(objectPath).NewReader(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("download %s: %w", objectPath, err)
-	}
-	return rc, nil
+	var rc io.ReadCloser
+	err := retry.Do(ctx, retry.DefaultConfig(), func() error {
+		var err error
+		rc, err = g.client.Bucket(g.bucket).Object(objectPath).NewReader(ctx)
+		if err != nil {
+			return fmt.Errorf("download %s: %w", objectPath, err)
+		}
+		return nil
+	}, retry.IsGCSTransient)
+
+	return rc, err
 }
 
 func (g *GCSClient) SignedURL(objectPath string, expiry time.Duration) (string, error) {
