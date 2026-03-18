@@ -37,10 +37,10 @@ milestones:
     estimated_weeks: 2
   - id: M5
     title: "Plugin System Foundation"
-    status: not_started
+    status: in_progress
     file: agent/milestones/milestone-5-plugin-system.md
     tasks_total: 6
-    tasks_completed: 0
+    tasks_completed: 1
     estimated_weeks: 3
   - id: M6
     title: "Production Deployment"
@@ -162,11 +162,12 @@ tasks:
   milestone_5:
     - id: 14
       title: "Implement Plugin Registry"
-      status: not_started
+      status: completed
       file: agent/tasks/milestone-5-plugin-system/task-14-plugin-registry.md
       estimated_hours: 5
-      started: null
-      actual_hours: null
+      started: 2026-03-18T07:40:00Z
+      completed_date: 2026-03-18T07:45:00Z
+      actual_hours: 0.1
     - id: 15
       title: "Create Plugin Manifest Parser"
       status: not_started
@@ -290,9 +291,9 @@ recent_work:
     description: "Completed Task 9 (Error Handling & Resilience): Implemented structured error types, exponential backoff retry for GCS operations, input validation hardening, consistent error responses across REST/WebSocket, GCS transient error detection"
 
 next_steps:
-  - "M4 complete! Only M5 (Plugin System) remaining"
-  - "Consider M5 for extensibility with custom effects/filters"
-  - "Deploy latest changes to production"
+  - "Continue M5: Task 15 (Plugin Manifest Parser) - YAML manifest schema and parser"
+  - "Continue M5: Task 16 (Go Plugin Loader) - Dynamic .so loading"
+  - "Continue M5: Task 17-19 (EDL integration, FFmpeg builder, sample plugin)"
 
 notes: []
 
