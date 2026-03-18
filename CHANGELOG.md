@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2026-03-18
+
+### Added
+- Plugin system foundation with registry, manifest parser, and Go plugin loader
+- Plugin interface: Plugin, VideoEffectPlugin, AudioEffectPlugin
+- Thread-safe plugin registry with lifecycle management (Register, Activate, Deactivate)
+- YAML plugin manifest schema with parameter type validation (float, int, string, bool)
+- Go plugin loader with dynamic .so loading and NewPlugin symbol resolution
+- Built-in plugin registration for plugins compiled into the server binary
+- Plugin-aware EDL validation (ValidateWithPlugins) checks filter types against registry
+- FFmpeg builder plugin invocation: falls back to plugin registry for unknown filter types
+- Sample film-grain plugin demonstrating full plugin lifecycle
+- Film-grain effect: maps intensity (0.0-1.0) to FFmpeg noise filter (strength 0-30)
+- Plugin manifest discovery from `plugins/` directory
+- 21+ unit tests across plugin system packages
+
 ## [1.0.0] - 2026-03-18
 
 ### Added
