@@ -25,6 +25,59 @@ func (e ValidationErrors) Error() string {
 // MediaExistsFn checks whether a media ID exists in storage.
 type MediaExistsFn func(mediaID string) bool
 
+// FilterChecker validates filter types and params against registered plugins.
+type FilterChecker interface {
+	// IsKnownFilter returns true if the filter type is a built-in or registered plugin.
+	IsKnownFilter(filterType string) bool
+	// ValidateFilterParams validates parameters for a filter type. Returns nil if valid.
+	ValidateFilterParams(filterType string, params map[string]interface{}) error
+}
+
+// BuiltinFilters is the set of filter types handled natively by the FFmpeg builder.
+var BuiltinFilters = map[string]bool{
+	"brightness": true,
+	"contrast":   true,
+	"saturation": true,
+	"crop":       true,
+	"text":       true,
+}
+
+// ValidateWithPlugins checks an EDL for correctness including plugin filter validation.
+func ValidateWithPlugins(edl *EDL, mediaExists MediaExistsFn, filterChecker FilterChecker) ValidationErrors {
+	errs := Validate(edl, mediaExists)
+
+	// Validate filter references against known filters and plugins
+	if filterChecker != nil {
+		for i, track := range edl.Timeline.Tracks {
+			for j, clip := range track.Clips {
+				for k, filter := range clip.Filters {
+					filterField := fmt.Sprintf("timeline.tracks[%d].clips[%d].filters[%d]", i, j, k)
+
+					if !BuiltinFilters[filter.Type] && !filterChecker.IsKnownFilter(filter.Type) {
+						errs = append(errs, ValidationError{
+							Field:   filterField + ".type",
+							Message: fmt.Sprintf("unknown filter type %q (not a built-in or registered plugin)", filter.Type),
+						})
+						continue
+					}
+
+					// Validate params against plugin schema
+					if !BuiltinFilters[filter.Type] {
+						if err := filterChecker.ValidateFilterParams(filter.Type, filter.Params); err != nil {
+							errs = append(errs, ValidationError{
+								Field:   filterField + ".params",
+								Message: err.Error(),
+							})
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return errs
+}
+
 // Validate checks an EDL for correctness and returns any validation errors.
 func Validate(edl *EDL, mediaExists MediaExistsFn) ValidationErrors {
 	var errs ValidationErrors
