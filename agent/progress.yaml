@@ -33,7 +33,7 @@ milestones:
     status: not_started
     file: agent/milestones/milestone-4-api-contract.md
     tasks_total: 4
-    tasks_completed: 1
+    tasks_completed: 2
     estimated_weeks: 2
   - id: M5
     title: "Plugin System Foundation"
@@ -137,11 +137,12 @@ tasks:
       actual_hours: 0.1
     - id: 11
       title: "Document WebSocket Protocol"
-      status: not_started
+      status: completed
       file: agent/tasks/milestone-4-api-contract/task-11-websocket-protocol.md
       estimated_hours: 3.5
-      started: null
-      actual_hours: null
+      started: 2026-03-18T01:16:00Z
+      completed_date: 2026-03-18T01:20:00Z
+      actual_hours: 0.1
     - id: 12
       title: "Generate API Reference Docs"
       status: not_started
