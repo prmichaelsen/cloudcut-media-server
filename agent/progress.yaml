@@ -40,7 +40,7 @@ milestones:
     status: in_progress
     file: agent/milestones/milestone-5-plugin-system.md
     tasks_total: 6
-    tasks_completed: 4
+    tasks_completed: 5
     estimated_weeks: 3
   - id: M6
     title: "Production Deployment"
@@ -194,11 +194,12 @@ tasks:
       actual_hours: 0.1
     - id: 18
       title: "Update FFmpeg Builder for Plugin Invocation"
-      status: not_started
+      status: completed
       file: agent/tasks/milestone-5-plugin-system/task-18-ffmpeg-builder-plugins.md
       estimated_hours: 3.5
-      started: null
-      actual_hours: null
+      started: 2026-03-18T07:59:00Z
+      completed_date: 2026-03-18T08:02:00Z
+      actual_hours: 0.1
     - id: 19
       title: "Create Sample Film-Grain Plugin"
       status: not_started

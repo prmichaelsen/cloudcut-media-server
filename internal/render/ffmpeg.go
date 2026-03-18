@@ -3,16 +3,19 @@ package render
 import (
 	"context"
 	"fmt"
+	"log"
 	"os/exec"
 	"strings"
 
 	"github.com/prmichaelsen/cloudcut-media-server/internal/edl"
+	"github.com/prmichaelsen/cloudcut-media-server/internal/plugin"
 	"github.com/prmichaelsen/cloudcut-media-server/internal/progress"
 )
 
 // FFmpegRenderer implements FFmpegClient for building and executing FFmpeg commands.
 type FFmpegRenderer struct {
-	ffmpegPath string
+	ffmpegPath     string
+	pluginRegistry *plugin.Registry
 }
 
 // NewFFmpegRenderer creates a new FFmpegRenderer.
@@ -23,6 +26,11 @@ func NewFFmpegRenderer(ffmpegPath string) *FFmpegRenderer {
 	return &FFmpegRenderer{
 		ffmpegPath: ffmpegPath,
 	}
+}
+
+// SetPluginRegistry sets the plugin registry for resolving plugin filters.
+func (f *FFmpegRenderer) SetPluginRegistry(registry *plugin.Registry) {
+	f.pluginRegistry = registry
 }
 
 // BuildRenderCommand constructs FFmpeg arguments from an EDL.
@@ -170,7 +178,7 @@ func (f *FFmpegRenderer) buildVideoFilter(tracks []edl.Track, parsedEDL *edl.EDL
 
 		// Apply clip filters
 		for _, clipFilter := range clip.Filters {
-			filterStr := buildFilterString(clipFilter)
+			filterStr := f.buildFilterString(clipFilter)
 			if filterStr != "" {
 				filter += "," + filterStr
 			}
@@ -299,7 +307,9 @@ func (f *FFmpegRenderer) buildH265Args(quality string) []string {
 }
 
 // buildFilterString converts a Filter to FFmpeg filter syntax.
-func buildFilterString(f edl.Filter) string {
+// It checks built-in filters first, then falls back to the plugin registry.
+func (r *FFmpegRenderer) buildFilterString(f edl.Filter) string {
+	// Try built-in filters first
 	switch f.Type {
 	case "brightness":
 		if val, ok := f.Params["value"].(float64); ok {
@@ -330,5 +340,19 @@ func buildFilterString(f edl.Filter) string {
 		return fmt.Sprintf("drawtext=text='%s':x=%.0f:y=%.0f:fontsize=%.0f:fontcolor=white",
 			strings.ReplaceAll(text, "'", "\\'"), x, y, size)
 	}
+
+	// Try plugin registry
+	if r.pluginRegistry != nil {
+		vp := r.pluginRegistry.GetVideoEffect(f.Type)
+		if vp != nil {
+			filterStr, err := vp.BuildFFmpegFilter(f.Params)
+			if err != nil {
+				log.Printf("plugin %s BuildFFmpegFilter error: %v", f.Type, err)
+				return ""
+			}
+			return filterStr
+		}
+	}
+
 	return ""
 }
