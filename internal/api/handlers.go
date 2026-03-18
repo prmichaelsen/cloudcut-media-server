@@ -1,7 +1,6 @@
 package api
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -11,6 +10,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/prmichaelsen/cloudcut-media-server/internal/jobs"
 	"github.com/prmichaelsen/cloudcut-media-server/internal/media"
 	"github.com/prmichaelsen/cloudcut-media-server/internal/storage"
 	"github.com/prmichaelsen/cloudcut-media-server/pkg/models"
@@ -27,16 +27,20 @@ var allowedContentTypes = map[string]bool{
 }
 
 type Handlers struct {
-	gcs    *storage.GCSClient
-	proxy  *media.ProxyGenerator
-	media  map[string]*models.Media // in-memory store for MVP
+	gcs        *storage.GCSClient
+	proxy      *media.ProxyGenerator
+	media      map[string]*models.Media // in-memory store for MVP
+	jobManager *jobs.JobManager
+	worker     *jobs.Worker
 }
 
-func NewHandlers(gcs *storage.GCSClient, proxy *media.ProxyGenerator) *Handlers {
+func NewHandlers(gcs *storage.GCSClient, proxy *media.ProxyGenerator, jobManager *jobs.JobManager, worker *jobs.Worker) *Handlers {
 	return &Handlers{
-		gcs:   gcs,
-		proxy: proxy,
-		media: make(map[string]*models.Media),
+		gcs:        gcs,
+		proxy:      proxy,
+		media:      make(map[string]*models.Media),
+		jobManager: jobManager,
+		worker:     worker,
 	}
 }
 
@@ -94,14 +98,9 @@ func (h *Handlers) HandleUpload(w http.ResponseWriter, r *http.Request) {
 
 	media.Status = models.MediaStatusProcessing
 
-	// Trigger proxy generation in background
-	go func() {
-		if err := h.proxy.GenerateProxy(context.Background(), media); err != nil {
-			log.Printf("proxy generation failed for %s: %v", media.ID, err)
-			media.Status = models.MediaStatusError
-			media.Error = fmt.Sprintf("proxy generation failed: %v", err)
-		}
-	}()
+	// Create proxy generation job
+	job := h.jobManager.CreateJob(jobs.JobTypeProxyGeneration, "", mediaID, nil)
+	h.worker.Submit(job)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
@@ -175,6 +174,11 @@ func (h *Handlers) HandleGetProxyURL(w http.ResponseWriter, r *http.Request) {
 func (h *Handlers) GetMedia(mediaID string) (*models.Media, bool) {
 	m, ok := h.media[mediaID]
 	return m, ok
+}
+
+// SetWorker sets the worker reference (called after initialization).
+func (h *Handlers) SetWorker(worker *jobs.Worker) {
+	h.worker = worker
 }
 
 func writeError(w http.ResponseWriter, status int, code, message string) {

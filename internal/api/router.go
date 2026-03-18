@@ -17,6 +17,8 @@ func NewRouter(gcs *storage.GCSClient, proxy *media.ProxyGenerator, wsSrv *ws.Se
 	mux.HandleFunc("GET /api/v1/media/{id}", h.HandleGetMedia)
 	mux.HandleFunc("GET /api/v1/media/{id}/url", h.HandleGetSignedURL)
 	mux.HandleFunc("GET /api/v1/media/{id}/proxy/url", h.HandleGetProxyURL)
+	mux.HandleFunc("GET /api/v1/jobs/{id}", h.HandleGetJob)
+	mux.HandleFunc("GET /api/v1/sessions/{id}/jobs", h.HandleListSessionJobs)
 	if wsSrv != nil {
 		mux.HandleFunc("GET /ws", wsSrv.HandleWebSocket)
 	}

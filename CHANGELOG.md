@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.0] - 2026-03-18
+
+### Added
+- Job manager (`internal/jobs/manager.go`) with CRUD operations for tracking processing jobs
+- Job worker pool (`internal/jobs/worker.go`) with configurable concurrency (default: 2 workers)
+- Complete end-to-end workflow: upload → proxy generation → EDL submission → render → download
+- REST endpoints: `GET /api/v1/jobs/{id}`, `GET /api/v1/sessions/{id}/jobs`
+- Job types: proxy_generation, export_render
+- Job statuses: queued, downloading, rendering, uploading, complete, failed
+- Real-time job progress reporting via WebSocket integrated with worker pool
+- API documentation (`docs/api.md`) covering REST and WebSocket protocols
+- Graceful worker shutdown on server stop
+- Background proxy generation now uses job system with progress tracking
+
+### Changed
+- Refactored proxy generation to use job worker instead of standalone goroutine
+- EDL submission now creates jobs managed by worker pool
+- WebSocket progress updates now sourced from job manager state
+
 ## [0.6.0] - 2026-03-18
 
 ### Added

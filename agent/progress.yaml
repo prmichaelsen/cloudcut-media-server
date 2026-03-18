@@ -1,6 +1,6 @@
 project:
   name: cloudcut-media-server
-  version: 0.6.0
+  version: 0.7.0
   started: 2026-03-17
   status: in_progress
   description: |
@@ -26,7 +26,7 @@ milestones:
     status: in_progress
     file: agent/milestones/milestone-3-progress-integration.md
     tasks_total: 3
-    tasks_completed: 1
+    tasks_completed: 2
     estimated_weeks: 1
   - id: M4
     title: "Stable API Contract"
@@ -112,11 +112,12 @@ tasks:
       actual_hours: 0.1
     - id: 8
       title: "End-to-End Workflow"
-      status: not_started
+      status: completed
       file: agent/tasks/milestone-3-progress-integration/task-8-end-to-end-workflow.md
       estimated_hours: 4
-      started: null
-      actual_hours: null
+      started: 2026-03-18T00:32:00Z
+      completed_date: 2026-03-18T00:45:00Z
+      actual_hours: 0.2
     - id: 9
       title: "Error Handling & Resilience"
       status: not_started
@@ -262,8 +263,8 @@ documentation:
 
 progress:
   planning: 100
-  implementation: 35
-  overall: 46
+  implementation: 38
+  overall: 50
 
 recent_work:
   - date: 2026-03-17
@@ -278,6 +279,8 @@ recent_work:
     description: "Planned M6 (Production Deployment): 7 tasks covering Docker containerization, GCP infrastructure setup, Cloud Run deployment, secrets management, CI/CD pipeline with GitHub Actions, monitoring/logging, and comprehensive deployment documentation"
   - date: 2026-03-18
     description: "Completed Task 7 (Progress Streaming): Implemented FFmpeg progress parser with stderr parsing, progress reporter with throttling, integrated progress callbacks into proxy generation and render pipelines"
+  - date: 2026-03-18
+    description: "Completed Task 8 (End-to-End Workflow): Implemented job manager and worker pool with concurrent processing, wired complete upload→proxy→EDL→render→download pipeline, added REST endpoints for job status, integrated real-time progress reporting via WebSocket"
 
 next_steps:
   - "Continue M3: Task 8 (End-to-End Workflow) - implement job manager, wire complete upload-to-download pipeline"

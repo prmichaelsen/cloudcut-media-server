@@ -8,7 +8,7 @@ import (
 )
 
 func TestHealthEndpoint(t *testing.T) {
-	handlers := NewHandlers(nil, nil)
+	handlers := NewHandlers(nil, nil, nil, nil)
 	router := NewRouter(nil, nil, nil, handlers)
 
 	req := httptest.NewRequest("GET", "/health", nil)
@@ -31,7 +31,7 @@ func TestHealthEndpoint(t *testing.T) {
 }
 
 func TestHealthEndpoint_ContentType(t *testing.T) {
-	handlers := NewHandlers(nil, nil)
+	handlers := NewHandlers(nil, nil, nil, nil)
 	router := NewRouter(nil, nil, nil, handlers)
 
 	req := httptest.NewRequest("GET", "/health", nil)
@@ -46,7 +46,7 @@ func TestHealthEndpoint_ContentType(t *testing.T) {
 }
 
 func TestCORS_Preflight(t *testing.T) {
-	handlers := NewHandlers(nil, nil)
+	handlers := NewHandlers(nil, nil, nil, nil)
 	router := NewRouter(nil, nil, nil, handlers)
 
 	req := httptest.NewRequest("OPTIONS", "/health", nil)
