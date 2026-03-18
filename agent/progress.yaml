@@ -33,7 +33,7 @@ milestones:
     status: not_started
     file: agent/milestones/milestone-4-api-contract.md
     tasks_total: 4
-    tasks_completed: 2
+    tasks_completed: 3
     estimated_weeks: 2
   - id: M5
     title: "Plugin System Foundation"
@@ -145,11 +145,12 @@ tasks:
       actual_hours: 0.1
     - id: 12
       title: "Generate API Reference Docs"
-      status: not_started
+      status: completed
       file: agent/tasks/milestone-4-api-contract/task-12-api-reference-docs.md
       estimated_hours: 2.5
-      started: null
-      actual_hours: null
+      started: 2026-03-18T01:21:00Z
+      completed_date: 2026-03-18T01:25:00Z
+      actual_hours: 0.1
     - id: 13
       title: "Build TypeScript SDK"
       status: not_started

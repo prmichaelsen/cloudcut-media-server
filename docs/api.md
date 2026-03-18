@@ -1,10 +1,16 @@
-# API Documentation
+# API Reference
 
 ## Overview
 
 The cloudcut-media-server provides a REST API for media upload/download and a WebSocket API for real-time EDL submission and progress updates.
 
-Base URL: `https://YOUR-SERVICE-URL` or `http://localhost:8080` (local)
+**Formal Specifications:**
+- REST API: [`api/openapi.yaml`](../api/openapi.yaml) (OpenAPI 3.0)
+- WebSocket Protocol: [`api/websocket-protocol.md`](../api/websocket-protocol.md)
+
+**Base URLs:**
+- Production: `https://cloudcut-media-server-868795766038.us-central1.run.app`
+- Local: `http://localhost:8080`
 
 ## REST API Endpoints
 
@@ -462,19 +468,42 @@ All errors follow this format:
 
 ## Rate Limiting
 
-Currently no rate limiting is enforced (MVP).
+- WebSocket progress updates: max 2/second per job
+- REST API: no rate limiting enforced (MVP)
 
 ---
 
 ## CORS
 
 CORS is enabled for all origins (`Access-Control-Allow-Origin: *`).
+All standard HTTP methods and headers are allowed.
 
 ---
 
 ## Authentication
 
 Currently no authentication is required (MVP). Authentication will be added in a future milestone.
+
+---
+
+## SDKs
+
+- **TypeScript/JavaScript**: [`sdk/typescript/`](../sdk/typescript/) - Full-featured SDK with REST and WebSocket clients
+
+---
+
+## Quick Reference
+
+| Endpoint                          | Method | Description              |
+|-----------------------------------|--------|--------------------------|
+| `/health`                         | GET    | Health check             |
+| `/api/v1/media/upload`            | POST   | Upload video file        |
+| `/api/v1/media/{id}`              | GET    | Get media metadata       |
+| `/api/v1/media/{id}/url`          | GET    | Get source signed URL    |
+| `/api/v1/media/{id}/proxy/url`    | GET    | Get proxy signed URL     |
+| `/api/v1/jobs/{id}`               | GET    | Get job status           |
+| `/api/v1/sessions/{id}/jobs`      | GET    | List session jobs        |
+| `/ws`                             | GET    | WebSocket upgrade        |
 
 ---
 
