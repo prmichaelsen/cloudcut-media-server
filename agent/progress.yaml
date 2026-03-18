@@ -40,7 +40,7 @@ milestones:
     status: in_progress
     file: agent/milestones/milestone-5-plugin-system.md
     tasks_total: 6
-    tasks_completed: 1
+    tasks_completed: 2
     estimated_weeks: 3
   - id: M6
     title: "Production Deployment"
@@ -170,11 +170,12 @@ tasks:
       actual_hours: 0.1
     - id: 15
       title: "Create Plugin Manifest Parser"
-      status: not_started
+      status: completed
       file: agent/tasks/milestone-5-plugin-system/task-15-plugin-manifest-parser.md
       estimated_hours: 3.5
-      started: null
-      actual_hours: null
+      started: 2026-03-18T07:46:00Z
+      completed_date: 2026-03-18T07:50:00Z
+      actual_hours: 0.1
     - id: 16
       title: "Build Go Plugin Loader"
       status: not_started

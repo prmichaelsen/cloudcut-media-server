@@ -5,6 +5,8 @@ go 1.25.0
 require (
 	cloud.google.com/go/storage v1.61.3
 	github.com/google/uuid v1.6.0
+	gopkg.in/yaml.v3 v3.0.1
+	nhooyr.io/websocket v1.8.17
 )
 
 require (
@@ -53,5 +55,4 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260226221140-a57be14db171 // indirect
 	google.golang.org/grpc v1.79.2 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
-	nhooyr.io/websocket v1.8.17 // indirect
 )
